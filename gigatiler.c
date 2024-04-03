@@ -26,6 +26,7 @@
 #include "ui.h"
 #include "util.h"
 
+
 /* macros */
 #define Button6                 6
 #define Button7                 7
@@ -380,8 +381,9 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 
 /* bar functions */
-
+#include "layouts.h"
 #include "patch/include.h"
+
 
 /* variables */
 static const char broken[] = "broken";
@@ -427,6 +429,7 @@ static Window root, wmcheckwin;
 #include "config.h"
 
 #include "patch/include.c"
+#include "layouts.c"
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[NUMTAGS > 31 ? -1 : 1]; };
