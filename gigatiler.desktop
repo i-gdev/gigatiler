@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Gigatiler
+Comment=Tiling window manager
+Exec=gigatiler
+Icon=gigatiler
+Type=XSession
