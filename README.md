@@ -2,4 +2,4 @@
 
 ## A Tiling Window Manager
 
-Currently very much unfinished.
+Based on DWM. Currently very much unfinished.

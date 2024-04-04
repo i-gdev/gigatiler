@@ -133,10 +133,6 @@ getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc, float 
  * Layouts
  */
 
-/*
- * Bottomstack layout + gaps + cfacts
- * https://dwm.suckless.org/patches/bottomstack/
- */
 static void
 bstack(Monitor *m)
 {
@@ -212,10 +208,6 @@ bstackhoriz(Monitor *m)
 	}
 }
 
-/*
- * Centred master layout + gaps + cfacts
- * https://dwm.suckless.org/patches/centeredmaster/
- */
 void
 centeredmaster(Monitor *m)
 {
@@ -342,10 +334,6 @@ centeredfloatingmaster(Monitor *m)
 	restack(m);
 }
 
-/*
- * Deck layout + gaps + cfacts
- * https://dwm.suckless.org/patches/deck/
- */
 static void
 deck(Monitor *m)
 {
@@ -386,10 +374,7 @@ deck(Monitor *m)
 		}
 }
 
-/*
- * Fibonacci layout + gaps
- * https://dwm.suckless.org/patches/fibonacci/
- */
+
 static void
 fibonacci(Monitor *m, int s)
 {
@@ -465,9 +450,6 @@ spiral(Monitor *m)
 	fibonacci(m, 0);
 }
 
-/* Flextile layout + gaps + cfacts + grid
- * https://dwm.suckless.org/patches/flextile/
- */
 void
 flextile(Monitor *m) {
 	unsigned int i, n, nc = 0, sc = 0, lt, cn = 0, rn = 0, cc = 0; // counters
@@ -725,10 +707,6 @@ setflexsymbols(Monitor *m, unsigned int n) {
 	}
 }
 
-/*
- * Gappless grid layout + gaps (ironically)
- * https://dwm.suckless.org/patches/gaplessgrid/
- */
 void
 gaplessgrid(Monitor *m)
 {
@@ -768,10 +746,6 @@ gaplessgrid(Monitor *m)
 	}
 }
 
-/*
- * Gridmode layout + gaps
- * https://dwm.suckless.org/patches/gridmode/
- */
 static void
 grid(Monitor *m)
 {
@@ -799,10 +773,6 @@ grid(Monitor *m)
 	}
 }
 
-/*
- * Horizontal grid layout + gaps
- * https://dwm.suckless.org/patches/horizgrid/
- */
 void
 horizgrid(Monitor *m) {
 	Client *c;

@@ -1,24 +1,7 @@
-/* See LICENSE file for copyright and license details.
- *
- * dynamic window manager is designed like any other X client as well. It is
- * driven through handling X events. In contrast to other X clients, a window
- * manager selects for SubstructureRedirectMask on the root window, to receive
- * events about window (dis-)appearance. Only one X connection at a time is
- * allowed to select for this event mask.
- *
- * The event handlers of dwm are organized in an array which is accessed
- * whenever a new event has been fetched. This allows event dispatching
- * in O(1) time.
- *
- * Each child of the root window is called a client, except windows which have
- * set the override_redirect flag. Clients are organized in a linked client
- * list on each monitor, the focus history is remembered through a stack list
- * on each monitor. Each client contains a bit array to indicate the tags of a
- * client.
- *
- * Keys and tagging rules are organized as arrays and defined in config.h.
- *
- * To understand everything else, start reading main().
+/* GigaTiler
+
+   Tiling Window Manager
+
  */
 #include <errno.h>
 #include <locale.h>
@@ -36,10 +19,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
-#ifdef XINERAMA
 #include <X11/extensions/Xinerama.h>
-#endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
+#include <X11/extensions/shape.h>
 
 #include "ui.h"
 #include "util.h"
@@ -169,6 +151,7 @@ static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
+static void drawroundedcorners(Client *c);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
@@ -744,6 +727,59 @@ enternotify(XEvent *e)
 	focus(c);
 }
 
+
+void drawroundedcorners(Client *c)
+{
+	XWindowAttributes win_attr;
+	Pixmap mask;
+	XGCValues xgcv;
+	GC shape_gc;
+	int dia, w, h;
+
+	if (corner_radius <= 0 || !c)
+		return;
+
+	/* Clear window shape if fullscreen */
+	if (c->w == c->mon->mw && c->h == c->mon->mh) {
+		XRectangle rect = { .x = 0, .y = 0, .width = c->w, .height = c->h };
+		XShapeCombineRectangles(dpy, c->win, ShapeBounding, 0, 0, &rect, 1, ShapeSet, 1);
+		return;
+	}
+
+	if (!XGetWindowAttributes(dpy, c->win, &win_attr))
+		return;
+
+	dia = 2 * corner_radius;
+	w = c->w + 2 * c->bw;
+	h = c->h + 2 * c->bw;
+	if (w < dia || h < dia)
+		return;
+
+	mask = XCreatePixmap(dpy, c->win, w, h, 1);
+	if (!mask)
+		return;
+
+	shape_gc = XCreateGC(dpy, mask, 0, &xgcv);
+	if (!shape_gc) {
+		XFreePixmap(dpy, mask);
+		free(shape_gc);
+		return;
+	}
+
+	XSetForeground(dpy, shape_gc, 0);
+	XFillRectangle(dpy, mask, shape_gc, 0, 0, w, h);
+	XSetForeground(dpy, shape_gc, 1);
+	XFillArc(dpy, mask, shape_gc, 0, 0, dia, dia, 0, 23040);
+	XFillArc(dpy, mask, shape_gc, w-dia-1, 0, dia, dia, 0, 23040);
+	XFillArc(dpy, mask, shape_gc, 0, h-dia-1, dia, dia, 0, 23040);
+	XFillArc(dpy, mask, shape_gc, w-dia-1, h-dia-1, dia, dia, 0, 23040);
+	XFillRectangle(dpy, mask, shape_gc, corner_radius, 0, w-dia, h);
+	XFillRectangle(dpy, mask, shape_gc, 0, corner_radius, w, h-dia);
+	XShapeCombineMask(dpy, c->win, ShapeBounding, -c->bw, -c->bw, mask, ShapeSet);
+	XFreePixmap(dpy, mask);
+	XFreeGC(dpy, shape_gc);
+}
+
 void
 expose(XEvent *e)
 {
@@ -939,7 +975,6 @@ incnmaster(const Arg *arg)
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
 	arrange(selmon);
 }
-#ifdef XINERAMA
 static int
 isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 {
@@ -949,7 +984,6 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 			return 0;
 	return 1;
 }
-#endif /* XINERAMA */
 
 void
 keypress(XEvent *e)
@@ -1216,6 +1250,7 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	c->oldw = c->w; c->w = wc.width = w;
 	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
+	drawroundedcorners(c);
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
@@ -1508,7 +1543,7 @@ setup(void)
 	XChangeProperty(dpy, wmcheckwin, netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	XChangeProperty(dpy, wmcheckwin, netatom[NetWMName], utf8string, 8,
-		PropModeReplace, (unsigned char *) "dwm", 3);
+		PropModeReplace, (unsigned char *) "gigatiler", 3);
 	XChangeProperty(dpy, root, netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	/* EWMH support per view */
@@ -1571,7 +1606,7 @@ spawn(const Arg *arg)
 		sa.sa_handler = SIG_DFL;
 		sigaction(SIGCHLD, &sa, NULL);
 		execvp(((char **)arg->v)[0], (char **)arg->v);
-		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
+		die("gigatiler: execvp '%s' failed:", ((char **)arg->v)[0]);
 	}
 }
 
@@ -1719,7 +1754,6 @@ int
 updategeom(void)
 {
 	int dirty = 0;
-#ifdef XINERAMA
 	if (XineramaIsActive(dpy)) {
 		int i, j, n, nn;
 		Client *c;
@@ -1773,7 +1807,6 @@ updategeom(void)
 		}
 		free(unique);
 	} else
-#endif /* XINERAMA */
 	{ /* default monitor setup */
 		if (!mons)
 			mons = createmon();
@@ -1853,7 +1886,7 @@ void
 updatestatus(void)
 {
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
-		strcpy(stext, "dwm-"VERSION);
+		strcpy(stext, "gigatiler-"VERSION);
 }
 
 void
@@ -1974,7 +2007,7 @@ xerror(Display *dpy, XErrorEvent *ee)
 	|| (ee->request_code == X_GrabKey && ee->error_code == BadAccess)
 	|| (ee->request_code == X_CopyArea && ee->error_code == BadDrawable))
 		return 0;
-	fprintf(stderr, "dwm: fatal error: request code=%d, error code=%d\n",
+	fprintf(stderr, "gigatiler: fatal error: request code=%d, error code=%d\n",
 		ee->request_code, ee->error_code);
 	return xerrorxlib(dpy, ee); /* may call exit */
 }
@@ -1990,7 +2023,7 @@ xerrordummy(Display *dpy, XErrorEvent *ee)
 int
 xerrorstart(Display *dpy, XErrorEvent *ee)
 {
-	die("dwm: another window manager is already running");
+	die("gigatiler: another window manager is already running");
 	return -1;
 }
 
@@ -2009,13 +2042,13 @@ int
 main(int argc, char *argv[])
 {
 	if (argc == 2 && !strcmp("-v", argv[1]))
-		die("dwm-"VERSION);
+		die("gigatiler-"VERSION);
 	else if (argc != 1)
-		die("usage: dwm [-v]");
+		die("usage: gigatiler [-v]");
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
 		fputs("warning: no locale support\n", stderr);
 	if (!(dpy = XOpenDisplay(NULL)))
-		die("dwm: cannot open display");
+		die("gigatiler: cannot open display");
 	checkotherwm();
 	setup();
 #ifdef __OpenBSD__
