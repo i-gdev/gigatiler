@@ -1,5 +1,4 @@
 # gigatiler - dynamic window manager
-# See LICENSE file for copyright and license details.
 
 include config.mk
 
@@ -8,11 +7,11 @@ OBJ = ${SRC:.c=.o}
 
 # FreeBSD users, prefix all ifdef, else and endif statements with a . for this to work (e.g. .ifdef)
 
-ifdef YAJLLIBS
-all: gigatiler gigatiler-msg
-else
+# ifdef YAJLLIBS
+# all: gigatiler gigatiler-msg
+# else
 all: gigatiler
-endif
+# endif
 
 .c.o:
 	${CC} -c ${CFLAGS} $<
@@ -25,14 +24,14 @@ config.h:
 gigatiler: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
-ifdef YAJLLIBS
-gigatiler-msg:
-	${CC} -o $@ patch/ipc/gigatiler-msg.c ${LDFLAGS}
-endif
+# ifdef YAJLLIBS
+# gigatiler-msg:
+# 	${CC} -o $@ patch/ipc/gigatiler-msg.c ${LDFLAGS}
+# endif
 
 clean:
 	rm -f gigatiler ${OBJ} gigatiler-${VERSION}.tar.gz
-	rm -f gigatiler-msg
+#	rm -f gigatiler-msg
 
 dist: clean
 	mkdir -p gigatiler-${VERSION}
@@ -45,13 +44,13 @@ dist: clean
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f gigatiler ${DESTDIR}${PREFIX}/bin
-ifdef YAJLLIBS
-	cp -f gigatiler-msg ${DESTDIR}${PREFIX}/bin
-endif
+# ifdef YAJLLIBS
+# 	cp -f gigatiler-msg ${DESTDIR}${PREFIX}/bin
+# endif
 	chmod 755 ${DESTDIR}${PREFIX}/bin/gigatiler
-ifdef YAJLLIBS
-	chmod 755 ${DESTDIR}${PREFIX}/bin/gigatiler-msg
-endif
+# ifdef YAJLLIBS
+# 	chmod 755 ${DESTDIR}${PREFIX}/bin/gigatiler-msg
+# endif
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < gigatiler.1 > ${DESTDIR}${MANPREFIX}/man1/gigatiler.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/gigatiler.1
