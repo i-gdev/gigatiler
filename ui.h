@@ -33,7 +33,7 @@ void ui_free(Ui *ui);
 Fnt *ui_fontset_create(Ui* ui, const char *fonts[], size_t fontcount);
 void ui_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h);
 void ui_fontset_free(Fnt* set);
-unsigned int ui_fontset_getwidth(Ui *ui, const char *text, Bool markup);
+unsigned int ui_fontset_getwidth(Ui *ui, const char *text);
 
 /* Colorscheme abstraction */
 void ui_clr_create(
@@ -57,7 +57,7 @@ void ui_setscheme(Ui *ui, Clr *scm);
 
 /* Drawing functions */
 void ui_rect(Ui *ui, int x, int y, unsigned int w, unsigned int h, int filled, int invert);
-int ui_text(Ui *ui, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert, Bool markup);
+int ui_text(Ui *ui, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert);
 
 /* Map functions */
 void ui_map(Ui *ui, Window win, int x, int y, unsigned int w, unsigned int h);
