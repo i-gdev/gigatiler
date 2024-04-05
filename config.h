@@ -1,5 +1,6 @@
 /* appearance */
 static const unsigned int borderpx  = 5;        /* border pixel of windows */
+static const int focusonmouse8		= 1;
 static const int corner_radius 		= 10;
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int gappih    = 20;       /* horiz inner gap between windows */
@@ -7,6 +8,7 @@ static const unsigned int gappiv    = 20;       /* vert inner gap between window
 static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
 static int smartgaps          		= 0;        /* 1 means no outer gap when there is only one window */
+static const int scrollsensitivity = 30; 
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
@@ -20,6 +22,9 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
+#define Button6 6
+#define Button7 7
+
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
@@ -31,6 +36,14 @@ static const Rule rules[] = {
 	/* class      			instance    title       tags mask     isfloating   monitor */
 	{ "pcmanfm-qt",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  			NULL,       NULL,       1 << 8,       0,           -1 },
+};
+
+static const int scrollargs[][2] = {
+	/* width change         height change */
+	{ +scrollsensitivity,	0 },
+	{ -scrollsensitivity,	0 },
+	{ 0, 				  	+scrollsensitivity },
+	{ 0, 					-scrollsensitivity },
 };
 
 #include "layouts.h"
@@ -114,12 +127,10 @@ static const Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static const Button buttons[] = {
 	/* click                event mask      button          function        argument */
-	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
-	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
-	{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 1} },
-	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 1} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+//	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+	{ ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = -1 } },
+	{ ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = +1 } },
 };
 

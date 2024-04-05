@@ -43,7 +43,7 @@ void ui_clr_create(
 );
 Clr *ui_scm_create(
 	Ui *ui,
-	char *clrnames[],
+	const char *clrnames[],
 	size_t clrcount
 );
 

@@ -202,11 +202,8 @@ ui_clr_create(
 /* Wrapper to create color schemes. The caller has to call free(3) on the
  * returned color scheme when done using it. */
 Clr *
-ui_scm_create(
-	Ui *ui,
-	char *clrnames[],
-	size_t clrcount
-) {
+ui_scm_create(Ui *ui, const char *clrnames[], size_t clrcount) 
+{
 	size_t i;
 	Clr *ret;
 
