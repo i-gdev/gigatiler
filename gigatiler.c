@@ -39,7 +39,6 @@
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
-#define TEXTW(X)                (ui_fontset_getwidth(ui, (X)) + lrpad)
 #define MWM_HINTS_FLAGS_FIELD       0
 #define MWM_HINTS_DECORATIONS_FIELD 2
 #define MWM_HINTS_DECORATIONS       (1 << 1)
@@ -222,7 +221,6 @@ static int updategeom(void);
 static void updatenumlockmask(void);
 static void updatemotifhints(Client *c);
 static void updatesizehints(Client *c);
-static void updatestatus(void);
 static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
@@ -240,7 +238,6 @@ static int bh, blw = 0;
 static char stext[256];
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
-static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -1357,9 +1354,7 @@ propertynotify(XEvent *e)
 	Client *c;
 	Window trans;
 	XPropertyEvent *ev = &e->xproperty;
-	if ((ev->window == root) && (ev->atom == XA_WM_NAME))
-		updatestatus();
-	else if (ev->state == PropertyDelete)
+	if (ev->state == PropertyDelete)
 		return; /* ignore */
 	else if ((c = wintoclient(ev->window))) {
 		switch(ev->atom) {
@@ -1722,7 +1717,6 @@ setup(void)
 	ui = ui_create(dpy, screen, root, sw, sh);
 	if (!ui_fontset_create(ui, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
-	lrpad = ui->fonts->h;
 	bh = ui->fonts->h + 2;
 	updategeom();
 	/* init atoms */
@@ -2126,13 +2120,6 @@ updatesizehints(Client *c)
 }
 
 void
-updatestatus(void)
-{
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
-		strcpy(stext, "gigatiler-"VERSION);
-}
-
-void
 updatetitle(Client *c)
 {
 	if (!gettextprop(c->win, netatom[NetWMName], c->name, sizeof c->name))
@@ -2294,10 +2281,6 @@ main(int argc, char *argv[])
 		die("gigatiler: cannot open display");
 	checkotherwm();
 	setup();
-#ifdef __OpenBSD__
-	if (pledge("stdio rpath proc exec", NULL) == -1)
-		die("pledge");
-#endif /* __OpenBSD__ */
 	scan();
 	run();
 	cleanup();
