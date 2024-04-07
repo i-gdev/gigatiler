@@ -1,6 +1,11 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#include "gigatiler.h"
+#include "layouts.h"
+
 /* appearance */
 static const unsigned int borderpx  = 5;        /* border pixel of windows */
-static const int focusonmouse8		= 1;
 static const int corner_radius 		= 10;
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int gappih    = 20;       /* horiz inner gap between windows */
@@ -23,11 +28,8 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-#define Button6 6
-#define Button7 7
-
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -35,9 +37,10 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      	instance    title       tags mask     isfloating   monitor   border width	can_focus 	 */
-	{ "pcmanfm-qt", NULL,       NULL,       0,            1,           -1, 			3, 			1 },
-	{ "Double Commander",  NULL,       NULL,       0,            1,           -1, 			3, 			1 },
-	{ "Polybar",  	NULL,       NULL,       0,	          0,           -1, 			0, 			0 },
+	{ "pcmanfm-qt",         NULL,       NULL,       0,            1,           -1, 			3, 			1 },
+    { "qps",                NULL,       NULL,       0,            1,           -1, 			3, 			1 },
+	{ "Double Commander",   NULL,       NULL,       0,            1,           -1, 			3, 			1 },
+	{ "Polybar",  	        NULL,       NULL,       0,	          0,           -1, 			0, 			0 },
 };
 
 static const int scrollargs[][2] = {
@@ -47,15 +50,6 @@ static const int scrollargs[][2] = {
 	{ 0, 				  	+scrollsensitivity },
 	{ 0, 					-scrollsensitivity },
 };
-
-#include "layouts.h"
-
-static const int layoutaxis[] = {
-	SPLIT_VERTICAL,   /* layout axis: 1 = x, 2 = y; negative values mirror the layout, setting the master area to the right / bottom instead of left / top */
-	TOP_TO_BOTTOM,    /* master axis: 1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
-	TOP_TO_BOTTOM,    /* stack axis:  1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
-};
-
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
@@ -67,7 +61,6 @@ static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[ T ]",      tile },    /* first entry is default */
 	{ "< F >",      NULL },    /* no layout function means floating behavior */
-	{ "[ FT ]",     flextile }, /* first entry is default */
 };
 
 /* key definitions */
@@ -135,4 +128,6 @@ static const Button buttons[] = {
 	{ ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = -1 } },
 	{ ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = +1 } },
 };
+
+#endif
 

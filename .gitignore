@@ -1,2 +1,10 @@
 patch/
 .vscode/
+.cache/
+.ctagsd/
+dev.project
+dev.workspace
+.clangd
+.clang-format
+gigatiler-workspace.code-workspace
+

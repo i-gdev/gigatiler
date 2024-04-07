@@ -1,5 +1,5 @@
 # gigatiler version
-VERSION = 1.0
+VERSION := "gigatiler $(shell git describe --tags --always 2>/dev/null || echo "unknown")"
 
 # paths
 PREFIX = /usr/local
